@@ -25,11 +25,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 static action_t keycode_to_action(uint8_t keycode);
 
+uint16_t actionmap_key_to_action(uint8_t layer, keypos_t key);
 
 /* converts key to action */
 action_t action_for_key(uint8_t layer, keypos_t key)
 {
-    uint8_t keycode = keymap_key_to_keycode(layer, key);
+    action_t action;
+    uint16_t keycode = actionmap_key_to_action(layer, key);
     switch (keycode) {
         case KC_FN0 ... KC_FN31:
             return keymap_fn_to_action(keycode);
@@ -99,7 +101,9 @@ action_t action_for_key(uint8_t layer, keypos_t key)
             return keycode_to_action(KC_BSPACE);
 #endif
         default:
-            return keycode_to_action(keycode);
+            action.key.code = (uint8_t)keycode;
+            action.key.mods = (keycode >> 8) & 0x1f;
+            return action;
     }
 }
 
